@@ -1,0 +1,48 @@
+server:
+  http_listen_port: 3200
+  log_level: info
+
+distributor:
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+          endpoint: 0.0.0.0:4317
+        http:
+          endpoint: 0.0.0.0:4318
+
+ingester:
+  lifecycler:
+    ring:
+      kvstore:
+        store: inmemory
+      replication_factor: 1
+  trace_idle_period: 10s
+  max_block_bytes: 5_000_000
+  max_block_duration: 5m
+
+query_frontend:
+  search:
+    duration_slo: 5s
+  trace_by_id:
+    duration_slo: 5s
+
+storage:
+  trace:
+    backend: local
+    local:
+      path: /var/tempo/traces
+    wal:
+      path: /var/tempo/wal
+
+usage_report:
+  reporting_enabled: false
+
+metrics_generator:
+  processor:
+    local_blocks:
+      filter_server_spans: false  # Include semua spans
+      flush_to_storage: true      # Untuk historical data
+      
+overrides:
+  metrics_generator_processors: ["local-blocks"]

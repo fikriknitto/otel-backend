@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  loki:
+    image: grafana/loki:3.6.0
+    container_name: loki
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./configs/loki.yaml:/etc/loki.yaml
+    command: -config.file=/etc/loki.yaml
+  
+  promtail:
+    image: grafana/promtail:3.6.0
+    container_name: promtail
+    ports:
+      - "9080:9080"
+    volumes:
+      - ./configs/promtail.yaml:/etc/promtail.yaml
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: -config.file=/etc/promtail.yaml
+
+  tempo:
+    image: grafana/tempo:2.6.0
+    container_name: tempo
+    command: ["-config.file=/etc/tempo.yaml"]
+    volumes:
+      - ./configs/tempo.yaml:/etc/tempo.yaml
+    ports:
+      - "3200:3200"
+      - "4317:4317"
+  
+  otel-collector:
+    image: otel/opentelemetry-collector:latest    
+    container_name: otel-collector
+    command: ["--config=/etc/otel-collector.yaml"]
+    volumes:
+      - ./configs/otel-collector.yaml:/etc/otel-collector.yaml
+    ports:
+      - "4318:4318"  
+
+  grafana:
+    image: grafana/grafana:12.3
+    container_name: grafana
+    volumes:
+      - grafana-data:/data/grafana
+
+    ports:
+      - "3001:3000"    
+    depends_on:
+      - loki
+      - promtail
+      - tempo
+      - otel-collector
+
+volumes:
+  grafana-data:
