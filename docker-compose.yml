@@ -1,4 +1,4 @@
-version: '3.8'
+version: '1.1'
 
 services:
   loki:
@@ -31,7 +31,7 @@ services:
       - "4317:4317"
   
   otel-collector:
-    image: otel/opentelemetry-collector:latest    
+    image: otel/opentelemetry-collector-contrib:0.144.0 
     container_name: otel-collector
     command: ["--config=/etc/otel-collector.yaml"]
     volumes:
@@ -53,5 +53,29 @@ services:
       - tempo
       - otel-collector
 
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    command:
+      - '--config.file=/etc/prometheus.yaml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.enable-remote-write-receiver'
+      - '--web.enable-otlp-receiver'
+      - '--enable-feature=exemplar-storage'
+    volumes:
+      - ./configs/prometheus.yaml:/etc/prometheus.yaml:ro
+      - prometheus-data:/prometheus
+    restart: unless-stopped
+  backend-api:
+    image: backend-api
+    environment:
+      - NODE_OPTIONS=--require @opentelemetry/auto-instrumentations-node/register
+    container_name: backend-api
+    ports:
+      - "8000:8000"      
+
 volumes:
   grafana-data:
+  prometheus-data:

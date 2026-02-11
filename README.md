@@ -40,16 +40,8 @@ Frontend (Trace ID: abc123)
         │
         ▼ HTTP Request (traceparent: 00-abc123-xxx-01)
         │
-Backend (Trace ID: abc123) ← SAMA!
+Backend (Trace ID: abc123) MATCH
 ├── Span: proses-1
 ├── Span: proses-2
 └── Span: proses-3
 ```
-
-## Troubleshooting
-
-### Trace ID tidak nyambung?
-
-1. **Cek CORS** - Pastikan header `traceparent` diizinkan
-2. **Cek URL pattern** - Frontend harus include backend URL di `propagateTraceHeaderCorsUrls`
-3. **Cek import order** - `tracing.ts` HARUS di-import pertama sebelum express

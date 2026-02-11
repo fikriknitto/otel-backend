@@ -15,11 +15,7 @@ const sdk = new NodeSDK({
     url: OTEL_EXPORTER_URL,
   }),
   instrumentations: [
-    getNodeAutoInstrumentations({
-      "@opentelemetry/instrumentation-express":{
-        enabled: false,
-      }
-    }),
+    getNodeAutoInstrumentations(),
   ],
 });
 

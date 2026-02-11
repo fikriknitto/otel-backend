@@ -13,6 +13,8 @@ receivers:
             - "*"
 
 exporters:
+  prometheusremotewrite:
+    endpoint: http://prometheus:9090/api/v1/write
   otlp/tempo:
     endpoint: tempo:4317
     tls:
@@ -23,3 +25,6 @@ service:
     traces:
       receivers: [otlp]
       exporters: [otlp/tempo]
+    metrics:
+      receivers: [otlp]
+      exporters: [prometheusremotewrite]

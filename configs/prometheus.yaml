@@ -1,0 +1,14 @@
+global:
+  scrape_interval: 5s
+otlp:
+  promote_resource_attributes:
+    - service.instance.id
+    - service.name
+    - service.namespace
+    - cloud.availability_zone
+    - cloud.region
+    - container.name
+scrape_configs:
+  - job_name: 'frontend'
+    static_configs:
+      - targets: ['localhost:5173']
