@@ -70,9 +70,9 @@ services:
     restart: unless-stopped
   backend-api:
     image: backend-api
-    environment:
-      - NODE_OPTIONS=--require @opentelemetry/auto-instrumentations-node/register
     container_name: backend-api
+    environment:
+      - OTEL_EXPORTER_URL=http://otel-collector:4318/v1/traces
     ports:
       - "8000:8000"      
 
